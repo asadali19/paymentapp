@@ -1,5 +1,6 @@
 const Region = require('../models/region');
 const City = require('../models/cities'); // Adjust the path as necessary
+const ActivityLog =  require('../models/activity');
 
 // Create a new region
 const createRegion = async (req, res) => {
@@ -56,6 +57,8 @@ const getRegionById = async (req, res) => {
 const getCityById = async (req, res) => {
   try {
     const { region_id } = req.params;
+    const { user } = req; // Assuming user info is attached to the req object after authentication
+
     const cities = await City.findAll({
       where: {
         region_id: region_id
@@ -63,8 +66,21 @@ const getCityById = async (req, res) => {
     });
 
     if (cities.length === 0) {
+      await ActivityLog.create({
+        activity_name: `User ${user.username} viewed cities for region ID ${region_id}`,
+        created_by: user.id,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
       return res.status(404).json({ error: 'No cities found for this region' });
     }
+
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed cities for region ID ${region_id}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
 
     res.status(200).json({ message: 'Cities retrieved successfully', data: cities });
   } catch (error) {
