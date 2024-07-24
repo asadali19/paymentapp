@@ -129,6 +129,7 @@ const updateRegion = async (req, res) => {
     }
 
     const updatedRegion = await Region.findByPk(id);
+    
     const { user } = req;
     await ActivityLog.create({
       activity_name: `User ${user.username} has updated the region  ${updatedRegion.region_name}`,

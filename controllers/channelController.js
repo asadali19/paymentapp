@@ -1,5 +1,5 @@
 const Channel = require('../models/channel'); // Adjust the path as necessary
-
+const ActivityLog = require('../models/activity');
 // Create a new channel
 const createChannel = async (req, res) => {
   try {
@@ -10,6 +10,13 @@ const createChannel = async (req, res) => {
       code,
       status,
       createdAt: new Date(),
+      updatedAt: new Date()
+    });
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} created the new channel  ${newchannel.channel_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
       updatedAt: new Date()
     });
 
@@ -37,6 +44,13 @@ const getChannelById = async (req, res) => {
     if (!channel) {
       return res.status(404).json({ error: 'channel not found' });
     }
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed the channel  ${channel.channel_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
     res.status(200).json({ message: 'channel retrieved successfully', data: channel });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -65,6 +79,14 @@ const updateChannel = async (req, res) => {
     }
 
     const updatedchannel = await Channel.findByPk(id);
+    
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has updated the channel  ${updatedchannel.channel_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
     res.status(200).json({ message: 'channel updated successfully', data: updatedchannel });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -81,6 +103,13 @@ const deleteChannel = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'channel not found' });
     }
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has deleted the channel ${channel.channel_name}`,
+      created_by: user.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
     res.status(204).json({ message: 'channel deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });

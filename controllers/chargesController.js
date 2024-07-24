@@ -1,5 +1,6 @@
 const Charges = require('../models/charges'); 
 const Merchants = require('../models/merchant'); 
+const ActivityLog = require('../models/activity');
 // Create a new charge
 const createCharge = async (req, res) => {
   try {
@@ -20,6 +21,14 @@ const createCharge = async (req, res) => {
       merchant_id,
       status,
       createdAt: new Date(),
+      updatedAt: new Date()
+    });
+
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} created the new charges  ${newCharge.name}`,
+      created_by: user.id,
+      createdAt:new Date(),
       updatedAt: new Date()
     });
 
@@ -65,6 +74,13 @@ const getChargeById = async (req, res) => {
         attributes: ['name'], // Include only the 'name' attribute from Merchant
         required: true // Ensure only charges with an associated merchant are returned
       }]
+    });
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed the charges  ${charge.name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
     });
 
     if (!charge) {
@@ -114,6 +130,14 @@ const updateCharge = async (req, res) => {
     if (!updated) {
       return res.status(404).json({ error: 'Charge not found' });
     }
+
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has updated the channel  ${updatedchannel.channel_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
 
     const updatedCharge = await Charges.findByPk(id);
     res.status(200).json(updatedCharge);
