@@ -23,6 +23,14 @@ const createRegion = async (req, res) => {
       updatedAt: new Date()
     });
 
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} created the new region  ${newRegion.region_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(201).json({ message: 'Region created successfully', data: newRegion });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -47,6 +55,13 @@ const getRegionById = async (req, res) => {
     if (!region) {
       return res.status(404).json({ error: 'Region not found' });
     }
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed the region  ${region.region_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
     res.status(200).json({ message: 'Region retrieved successfully', data: region });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -65,18 +80,13 @@ const getCityById = async (req, res) => {
       }
     });
 
-    if (cities.length === 0) {
-      await ActivityLog.create({
-        activity_name: `User ${user.username} viewed cities for region ID ${region_id}`,
-        created_by: user.id,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-      return res.status(404).json({ error: 'No cities found for this region' });
+    const region = await Region.findByPk(region_id);
+    if (!region) {
+      return res.status(404).json({ error: 'Region not found' });
     }
 
     await ActivityLog.create({
-      activity_name: `User ${user.username} viewed cities for region ID ${region_id}`,
+      activity_name: `User ${user.username} viewed cities for region Name ${region.region_name}`,
       created_by: user.id,
       createdAt:new Date(),
       updatedAt: new Date()
@@ -119,6 +129,13 @@ const updateRegion = async (req, res) => {
     }
 
     const updatedRegion = await Region.findByPk(id);
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has updated the region  ${updatedRegion.region_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
     res.status(200).json({ message: 'Region updated successfully', data: updatedRegion });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -129,17 +146,33 @@ const updateRegion = async (req, res) => {
 const deleteRegion = async (req, res) => {
   try {
     const { id } = req.params;
-    const deleted = await Region.destroy({
-      where: { region_id: id }
-    });
-    if (!deleted) {
+
+    // Fetch the region using region_id
+    const region = await Region.findOne({ where: { region_id: id } });
+
+    if (!region) {
       return res.status(404).json({ error: 'Region not found' });
     }
+
+    // Delete the region
+    await Region.destroy({
+      where: { region_id: id }
+    });
+
+    // Log activity
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has deleted the region ${region.region_name}`,
+      created_by: user.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
     res.status(204).json({ message: 'Region deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 module.exports = {
   createRegion,

@@ -1,6 +1,6 @@
 // merchantRoutes.js
 const express = require('express');
-const authenticateToken = require('../middleware/authMiddleware');
+const {authenticateToken} = require("../middleware/authMiddleware")
 const { createMerchant, getAllMerchants, getMerchantById, updateMerchant, deleteMerchant} = require('../controllers/merchantController'); 
 
 const router = express.Router();

@@ -1,4 +1,7 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const Role = require('../models/role');
+const Permission = require('../models/Permission');
 
 const authenticateToken = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1];
@@ -15,4 +18,43 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
-module.exports = authenticateToken;
+async function authorizeRolesAndPermissions(req, res, next) {
+  try {
+
+   const user = await User.findByPk(req.user.userId, {
+  include: [{
+    model: Role, 
+    as: 'role' 
+  }]
+  })
+    if (!user) {
+      return res.status(403).json({ message: 'Access denied. User not found.' });
+  }
+  const role = user.role;
+  if (!role) {
+      return res.status(403).json({ message: 'Access denied. User does not have a role assigned.' });
+  } 
+  const requestedRoute = req.originalUrl;
+  const lastSlashIndex = requestedRoute.lastIndexOf('/');
+  const cleanRoute = requestedRoute.substring(0, lastSlashIndex + 1);
+  // Query your database to find the corresponding permission name for the requested route
+  const permission = await Permission.findOne({ permission_name: cleanRoute });
+
+  if (!permission) {
+      return res.status(403).json({ message: 'Access denied. Permission not found for this route.' });
+  }
+
+  if (!role.permissions.includes(permission.permission_id)) {
+      return res.status(403).json({ message: 'Access denied. Insufficient permissions.' });
+  }
+
+  next();
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+}
+
+}
+
+module.exports = { 
+   authorizeRolesAndPermissions, authenticateToken };
