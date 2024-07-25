@@ -1,5 +1,5 @@
 const Charges = require('../models/charges'); 
-const Merchants = require('../models/merchant'); 
+const Terminals = require('../models/terminal'); 
 const ActivityLog = require('../models/activity');
 // Create a new charge
 const createCharge = async (req, res) => {
@@ -9,7 +9,7 @@ const createCharge = async (req, res) => {
       rangeamount = null,
       percentage = null,
       fixedamount = null,
-      merchant_id = null,
+      terminal_id = null,
       status = null
     } = req.body;
 
@@ -18,7 +18,7 @@ const createCharge = async (req, res) => {
       rangeamount,
       percentage,
       fixedamount,
-      merchant_id,
+      terminal_id,
       status,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -43,19 +43,20 @@ const getAllCharges = async (req, res) => {
   try {
     const charges = await Charges.findAll({
       include: [{
-        model: Merchants,
-        attributes: ['name'], // Include only the 'name' attribute from Merchant
-        required: true // Ensure only charges with an associated merchant are returned
+        model: Terminals,
+        attributes: ['terminal_sn'], 
+        required: true 
       }]
     });
 
-    const chargesWithMerchant = charges.map(charge => {
-      const { Merchant, ...chargeData } = charge.dataValues;
+    const chargesWithTerminal = charges.map(charge => {
+      const { Terminal, ...chargeData } = charge.dataValues;
       return {
-        ...chargeData
+        ...chargeData,
       };
     });
-    res.status(200).json(chargesWithMerchant);
+
+    res.status(200).json(chargesWithTerminal);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -70,8 +71,8 @@ const getChargeById = async (req, res) => {
     // Find the charge by ID, including the associated Merchant's name
     const charge = await Charges.findByPk(id, {
       include: [{
-        model: Merchants,
-        attributes: ['name'], // Include only the 'name' attribute from Merchant
+        model: Terminals,
+        attributes: ['terminal_sn'], // Include only the 'name' attribute from Merchant
         required: true // Ensure only charges with an associated merchant are returned
       }]
     });
@@ -110,7 +111,7 @@ const updateCharge = async (req, res) => {
       rangeamount = null,
       percentage = null,
       fixedamount = null,
-      merchant_id = null,
+      terminal_id = null,
       status = null
     } = req.body;
 
@@ -119,7 +120,7 @@ const updateCharge = async (req, res) => {
       rangeamount,
       percentage,
       fixedamount,
-      merchant_id,
+      terminal_id,
       status,
       updatedAt: new Date()
     };
@@ -136,7 +137,7 @@ const updateCharge = async (req, res) => {
 
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has updated the charges  ${updatedCharge.name}`,
+      activity_name: `User ${user.username} has updated the channel  ${updatedchannel.channel_name}`,
       created_by: user.id,
       createdAt:new Date(),
       updatedAt: new Date()

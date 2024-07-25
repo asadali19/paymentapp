@@ -12,7 +12,7 @@ const {
 const router = express.Router();
 
 router.post('/create/channel', authenticateToken, createChannel);
-router.get('/channel', authenticateToken, getAllChannel);
+router.get('/channels', authenticateToken, getAllChannel);
 router.get('/channel/:id', authenticateToken, getChannelById);
 router.put('/update/channel/:id', authenticateToken, updateChannel);
 router.delete('/delete/channel/:id', authenticateToken, deleteChannel);

@@ -10,7 +10,7 @@ const {
 } = require('../controllers/groupController'); 
 
 router.post('/create/group', authenticateToken, createGroup);
-router.get('/group', authenticateToken, getAllGroups);
+router.get('/groups', authenticateToken, getAllGroups);
 router.get('/group/:id', authenticateToken, getGroupById);
 router.put('/update/group/:id', authenticateToken, updateGroup);
 router.delete('/delete/group/:id', authenticateToken, deleteGroup);

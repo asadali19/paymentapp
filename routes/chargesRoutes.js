@@ -1,5 +1,5 @@
 const express = require('express');
-const {authenticateToken} = require('../middleware/authMiddleware');
+const {authenticateToken, authorizeRolesAndPermissions} = require('../middleware/authMiddleware');
 const router = express.Router();
 const {
   createCharge,
@@ -10,9 +10,9 @@ const {
 } = require('../controllers/chargesController'); 
 
 router.post('/create/charges', authenticateToken, createCharge);
-router.get('/charges', authenticateToken, getAllCharges);
-router.get('/charges/:id', authenticateToken, getChargeById);
-router.put('/update/charges/:id', authenticateToken, updateCharge);
+router.get('/charges', authenticateToken, authorizeRolesAndPermissions, getAllCharges);
+router.get('/charge/:id', authenticateToken, authorizeRolesAndPermissions, getChargeById);
+router.put('/update/charges/:id', authenticateToken,authorizeRolesAndPermissions, updateCharge);
 router.delete('/delete/charges/:id', authenticateToken, deleteCharge);
 
 module.exports = router;

@@ -35,14 +35,12 @@ async function authorizeRolesAndPermissions(req, res, next) {
       return res.status(403).json({ message: 'Access denied. User does not have a role assigned.' });
   } 
   const requestedRoute = req.originalUrl;
-  const lastSlashIndex = requestedRoute.lastIndexOf('/');
-  const cleanRoute = requestedRoute.substring(0, lastSlashIndex + 1);
+  const cleanRoute = requestedRoute.replace(/\/\d+$/, '');
+  // console.log("Clean Route:", cleanRoute);
+  
   // Query your database to find the corresponding permission name for the requested route
-  const permission = await Permission.findOne({ permission_name: cleanRoute });
+  const permission = await Permission.findOne({ where: { permission_name: cleanRoute } });
 
-  if (!permission) {
-      return res.status(403).json({ message: 'Access denied. Permission not found for this route.' });
-  }
 
   if (!role.permissions.includes(permission.permission_id)) {
       return res.status(403).json({ message: 'Access denied. Insufficient permissions.' });

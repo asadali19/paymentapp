@@ -11,7 +11,7 @@ const {
 const router = express.Router();
 
 router.post('/create/industry', authenticateToken, createIndustry);
-router.get('/industry', authenticateToken, getAllIndustries);
+router.get('/industrys', authenticateToken, getAllIndustries);
 router.get('/industry/:id', authenticateToken, getIndustryById);
 router.put('/update/industry/:id', authenticateToken, updateIndustry);
 router.delete('/delete/industry/:id', authenticateToken, deleteIndustry);

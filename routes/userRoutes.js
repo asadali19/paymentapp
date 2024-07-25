@@ -9,7 +9,7 @@ router.post('/login', loginUser);
 
 // User CRUD routes with authentication
 router.get('/users', authenticateToken, authorizeRolesAndPermissions, getAllUsers);
-router.get('/users/:id', authenticateToken, getUserById);
+router.get('/user/:id', authenticateToken, getUserById);
 router.put('/update/users/:id', authenticateToken, updateUser);
 router.delete('/delete/users/:id', authenticateToken, deleteUser);
 

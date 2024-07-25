@@ -9,6 +9,7 @@ const createRegion = async (req, res) => {
       region_name = null,
       status = null,
       code = null,
+      fed_per = null,
     } = req.body;
 
     if (!region_name || !status) {
@@ -19,6 +20,7 @@ const createRegion = async (req, res) => {
       region_name,
       status,
       code,
+      fed_per,
       createdAt: new Date(),
       updatedAt: new Date()
     });
@@ -106,7 +108,8 @@ const updateRegion = async (req, res) => {
     const {
       region_name = null,
       status = null,
-      code = null
+      code = null,
+      fed_per = null,
     } = req.body;
 
     if (!region_name || !status) {
@@ -117,6 +120,7 @@ const updateRegion = async (req, res) => {
       region_name,
       status,
       code,
+      fed_per,
       updatedAt: new Date()
     };
 

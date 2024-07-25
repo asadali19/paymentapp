@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const Merchant = require('./merchant'); // Adjust the path as necessary
+const Terminal = require('./terminal'); // Adjust the path as necessary
 
 // Initialize sequelize
 const sequelize = new Sequelize('paymentapp', 'root', null, {
@@ -28,11 +28,11 @@ const Charges = sequelize.define('charges', { // <-- Specify table name without 
     type: DataTypes.STRING,
     
   },
-  merchant_id: {
+  terminal_id: {
     type: DataTypes.INTEGER,
     references: {
-      model: Merchant,
-      key: 'merchant_id'
+      model: Terminal,
+      key: 'terminal_id'
     }
   },
   status: {
@@ -49,7 +49,7 @@ const Charges = sequelize.define('charges', { // <-- Specify table name without 
 });
 
 // Set up the association
-Charges.belongsTo(Merchant, { foreignKey: 'merchant_id' });
+Charges.belongsTo(Terminal, { foreignKey: 'terminal_id' });
 
 // Export the Terminal model
 module.exports = Charges;

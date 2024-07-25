@@ -11,7 +11,7 @@ const {
 
 router.post('/create/roles', authenticateToken, createRole);
 router.get('/roles', authenticateToken, getAllRoles);
-router.get('/roles/:id', authenticateToken, getRoleById); 
+router.get('/role/:id', authenticateToken, getRoleById); 
 router.put('/update/roles/:id', authenticateToken, updateRole); 
 router.delete('/delete/roles/:id', authenticateToken, deleteRole);
 
