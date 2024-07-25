@@ -16,6 +16,9 @@ const Region = sequelize.define('region', {
     region_name: {
     type: DataTypes.STRING
   },
+  fed_per:{
+    type: DataTypes.STRING
+  },
   code: {
     type: DataTypes.INTEGER,
   },
