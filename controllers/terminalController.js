@@ -1,5 +1,6 @@
 const Terminal = require('../models/terminal');
 const Merchants = require('../models/merchant');
+const ActivityLog =  require('../models/activity');
 
 const Channel = require('../models/channel'); 
 const City = require('../models/cities'); 
@@ -58,6 +59,14 @@ const createTerminal = async (req, res) => {
       createdAt: new Date(),
       updatedAt: new Date()
     });
+     
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} created the new terminal ${newTerminal.terminal_sn}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
 
     res.status(201).json(newTerminal);
   } catch (error) {
@@ -111,6 +120,15 @@ const getTerminalById = async (req, res) => {
     const terminalWithMerchantName = {
       ...terminalData
     };
+    
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed the terminal  ${terminal.terminal_sn}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
 
     res.status(200).json(terminalWithMerchantName);
   } catch (error) {
@@ -151,6 +169,15 @@ const updateTerminal = async (req, res) => {
     }
 
     const updatedTerminal = await Terminal.findByPk(id);
+    
+    // Activity log
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has updated theTerinal ${updatedTerminal.terminal_sn}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
     res.status(200).json(updatedTerminal);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -167,7 +194,17 @@ const deleteTerminal = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Terminal not found' });
     }
-    res.status(204).json();
+    
+    // Log activity
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has deleted the terminal ${deleted.terminal_sn}`,
+      created_by: user.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+
+    res.status(204).json({ message: 'Terminal deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

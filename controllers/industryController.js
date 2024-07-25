@@ -1,4 +1,5 @@
 const Industry = require('../models/industry'); // Adjust the path as necessary
+const ActivityLog =  require('../models/activity');
 
 // Create a new industry
 const createIndustry = async (req, res) => {
@@ -13,6 +14,14 @@ const createIndustry = async (req, res) => {
       updatedAt: new Date()
     });
 
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} created the new Industry ${newIndustry.industry_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+  
     res.status(201).json({ message: 'Industry created successfully', data: newIndustry });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -37,6 +46,15 @@ const getIndustryById = async (req, res) => {
     if (!industry) {
       return res.status(404).json({ error: 'Industry not found' });
     }
+    
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed the industry  ${industry.industry_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(200).json({ message: 'Industry retrieved successfully', data: industry });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -65,6 +83,15 @@ const updateIndustry = async (req, res) => {
     }
 
     const updatedIndustry = await Industry.findByPk(id);
+     
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has updated the industry  ${updatedIndustry.industry_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(200).json({ message: 'Industry updated successfully', data: updatedIndustry });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -81,6 +108,16 @@ const deleteIndustry = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Industry not found' });
     }
+    
+    // Log activity
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has deleted the industry ${deleted.industry_name}`,
+      created_by: user.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(204).json({ message: 'Industry deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });

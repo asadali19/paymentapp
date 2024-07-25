@@ -75,14 +75,7 @@ const getChargeById = async (req, res) => {
         required: true // Ensure only charges with an associated merchant are returned
       }]
     });
-    const { user } = req;
-    await ActivityLog.create({
-      activity_name: `User ${user.username} viewed the charges  ${charge.name}`,
-      created_by: user.id,
-      createdAt:new Date(),
-      updatedAt: new Date()
-    });
-
+   
     if (!charge) {
       return res.status(404).json({ error: 'Charge not found' });
     }
@@ -92,6 +85,14 @@ const getChargeById = async (req, res) => {
     const chargeWithMerchantName = {
       ...chargeData,
     };
+
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed the charges  ${charge.name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
 
     res.status(200).json(chargeWithMerchantName); // Send the charge with merchant name
   } catch (error) {
@@ -130,16 +131,17 @@ const updateCharge = async (req, res) => {
     if (!updated) {
       return res.status(404).json({ error: 'Charge not found' });
     }
+    
+    const updatedCharge = await Charges.findByPk(id);
 
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has updated the channel  ${updatedchannel.channel_name}`,
+      activity_name: `User ${user.username} has updated the charges  ${updatedCharge.name}`,
       created_by: user.id,
       createdAt:new Date(),
       updatedAt: new Date()
     });
 
-    const updatedCharge = await Charges.findByPk(id);
     res.status(200).json(updatedCharge);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -156,6 +158,13 @@ const deleteCharge = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Charge not found' });
     }
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has deleted the charge ${deleted.name}`,
+      created_by: user.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
     res.status(204).json();
   } catch (error) {
     res.status(500).json({ error: error.message });

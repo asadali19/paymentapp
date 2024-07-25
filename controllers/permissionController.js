@@ -1,4 +1,5 @@
 const Permission = require('../models/permission'); // Adjust the path as necessary
+const ActivityLog =  require('../models/activity');
 
 // Create a new permission
 const createPermission = async (req, res) => {
@@ -14,6 +15,14 @@ const createPermission = async (req, res) => {
       description,
       status,
       createdAt: new Date(),
+      updatedAt: new Date()
+    });
+     
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} created the new permission ${newPermission.permission_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
       updatedAt: new Date()
     });
 
@@ -41,6 +50,15 @@ const getPermissionById = async (req, res) => {
     if (!permission) {
       return res.status(404).json({ error: 'Permission not found' });
     }
+    
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed the permission ${permission.permission_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(200).json({ message: 'Permission retrieved successfully', data: permission });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -73,6 +91,16 @@ const updatePermission = async (req, res) => {
     }
 
     const updatedPermission = await Permission.findByPk(id);
+    
+    // Activity log
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has updated the permission  ${updatedPermission.permission_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(200).json({ message: 'Permission updated successfully', data: updatedPermission });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -89,6 +117,16 @@ const deletePermission = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Permission not found' });
     }
+    
+    // Log activity
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has deleted the permission ${deleted.permission_name}`,
+      created_by: user.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(204).json({ message: 'Permission deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });

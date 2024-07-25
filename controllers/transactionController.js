@@ -1,5 +1,7 @@
 const Transaction = require("../models/transaction");
 const Merchant = require("../models/merchant")
+const ActivityLog = require('../models/activity');
+
 const storeTransaction = async (req, res) => {
   try {
     const {

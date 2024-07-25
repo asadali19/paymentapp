@@ -1,5 +1,6 @@
 const Subgroup = require('../models/subgroup'); // Adjust the path as necessary
 const Group = require('../models/group'); // Adjust the path as necessary
+const ActivityLog =  require('../models/activity');
 
 // Create a new subgroup
 const createSubgroup = async (req, res) => {
@@ -17,6 +18,14 @@ const createSubgroup = async (req, res) => {
       status,
       code,
       createdAt: new Date(),
+      updatedAt: new Date()
+    });
+     
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} created the new subgroup ${newSubgroup.subgroup_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
       updatedAt: new Date()
     });
 
@@ -48,6 +57,15 @@ const getSubgroupById = async (req, res) => {
     if (!subgroup) {
       return res.status(404).json({ error: 'Subgroup not found' });
     }
+    
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed the subgroup ${subgroup.subgroup_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(200).json({ message: 'Subgroup retrieved successfully', data: subgroup });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -81,6 +99,15 @@ const updateSubgroup = async (req, res) => {
     const updatedSubgroup = await Subgroup.findByPk(id, {
       include: [{ model: Group, attributes: ['group_name'] }]
     });
+    
+    // Activity log
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has updated the Subgroup  ${updatedSubgroup.subgroupname}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
 
     res.status(200).json({ message: 'Subgroup updated successfully', data: updatedSubgroup });
   } catch (error) {
@@ -99,6 +126,15 @@ const deleteSubgroup = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Subgroup not found' });
     }
+    
+    // Log activity
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has deleted the subgroup ${deleted.subgroup_name}`,
+      created_by: user.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
     res.status(204).json({ message: 'Subgroup deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });

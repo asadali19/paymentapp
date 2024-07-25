@@ -16,6 +16,15 @@ const createMerchant = async (req, res) => {
       status,
       subgroup_id
     });
+     
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} created the new merchant ${newMerchant.name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(201).json(newMerchant);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -67,6 +76,15 @@ const getMerchantById = async (req, res) => {
     const merchantWithSubgroupName = {
       ...merchantData
     };
+    
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed the merchant  ${merchant.name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
 
     res.status(200).json({ message: 'Merchant retrieved successfully', data: merchantWithSubgroupName });
   } catch (error) {
@@ -98,6 +116,16 @@ const updateMerchant = async (req, res) => {
     }
 
     const updatedMerchant = await Merchant.findByPk(id);
+
+    // Activity log
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has updated the merchant  ${updatedMerchant.name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(200).json(updatedMerchant);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -114,6 +142,16 @@ const deleteMerchant = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Merchant not found' });
     }
+    
+    // Log activity
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has deleted the merchant ${deleted.name}`,
+      created_by: user.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(204).json();
   } catch (error) {
     res.status(500).json({ error: error.message });

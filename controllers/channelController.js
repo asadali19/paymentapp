@@ -105,7 +105,7 @@ const deleteChannel = async (req, res) => {
     }
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has deleted the channel ${channel.channel_name}`,
+      activity_name: `User ${user.username} has deleted the channel ${Channel.channel_name}`,
       created_by: user.id,
       createdAt: new Date(),
       updatedAt: new Date()

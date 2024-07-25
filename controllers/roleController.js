@@ -1,4 +1,5 @@
 const Role = require('../models/role'); // Adjust the path as necessary
+const ActivityLog =  require('../models/activity');
 
 // Create a new role
 const createRole = async (req, res) => {
@@ -14,6 +15,14 @@ const createRole = async (req, res) => {
       permissions,
       status,
       createdAt: new Date(),
+      updatedAt: new Date()
+    });
+     
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} created the new role ${newRole.role_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
       updatedAt: new Date()
     });
 
@@ -41,6 +50,15 @@ const getRoleById = async (req, res) => {
     if (!role) {
       return res.status(404).json({ error: 'Role not found' });
     }
+    
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed the role  ${role.role_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(200).json({ message: 'Role retrieved successfully', data: role });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -73,6 +91,16 @@ const updateRole = async (req, res) => {
     }
 
     const updatedRole = await Role.findByPk(id);
+    
+    // Activity log
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has updated the role  ${updatedRole.role_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(200).json({ message: 'Role updated successfully', data: updatedRole });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -89,6 +117,15 @@ const deleteRole = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Role not found' });
     }
+    
+    // Log activity
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has deleted the role ${deleted.role_name}`,
+      created_by: user.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
     res.status(204).json({ message: 'Role deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });

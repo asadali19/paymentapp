@@ -1,5 +1,7 @@
 const Cities = require('../models/cities'); // Adjust the path as necessary
 
+const ActivityLog = require('../models/activity');
+
 // Create a new city
 const createCity = async (req, res) => {
   try {
@@ -14,6 +16,14 @@ const createCity = async (req, res) => {
       updatedAt: new Date()
     });
 
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} created the new city ${newCity.city_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+  
     res.status(201).json({ message: 'City created successfully', data: newCity });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -38,6 +48,15 @@ const getCityById = async (req, res) => {
     if (!city) {
       return res.status(404).json({ error: 'City not found' });
     }
+
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} viewed the city  ${city.city_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(200).json({ message: 'City retrieved successfully', data: city });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -65,8 +84,18 @@ const updateCity = async (req, res) => {
     if (!updated) {
       return res.status(404).json({ error: 'City not found' });
     }
-
+    
     const updatedCity = await Cities.findByPk(id);
+
+    // Activity log
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has updated the city  ${updatedCity.city_name}`,
+      created_by: user.id,
+      createdAt:new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(200).json({ message: 'City updated successfully', data: updatedCity });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -83,6 +112,15 @@ const deleteCity = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'City not found' });
     }
+    // Log activity
+    const { user } = req;
+    await ActivityLog.create({
+      activity_name: `User ${user.username} has deleted the city ${deleted.city_name}`,
+      created_by: user.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+
     res.status(204).json({ message: 'City deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
