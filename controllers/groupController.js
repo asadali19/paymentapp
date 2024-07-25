@@ -113,11 +113,12 @@ const deleteGroup = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Group not found' });
     }
+    const group = await Group.findOne({ where: { group_id: id } }); 
 
     // Log activity
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has deleted the group ${deleted.group_name}`,
+      activity_name: `User ${user.username} has deleted the group ${group.group_name}`,
       created_by: user.id,
       createdAt: new Date(),
       updatedAt: new Date()

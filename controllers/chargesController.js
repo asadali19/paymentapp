@@ -159,9 +159,11 @@ const deleteCharge = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Charge not found' });
     }
+    const charge = await Charges.findOne({ where: { charges_id: id } }); 
+    
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has deleted the charge ${deleted.name}`,
+      activity_name: `User ${user.username} has deleted the charge ${charge.name}`,
       created_by: user.id,
       createdAt: new Date(),
       updatedAt: new Date()

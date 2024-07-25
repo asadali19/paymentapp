@@ -112,10 +112,11 @@ const deleteCity = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'City not found' });
     }
+    const city = await Cities.findOne({ where: { city_id: id } }); 
     // Log activity
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has deleted the city ${deleted.city_name}`,
+      activity_name: `User ${user.username} has deleted the city ${city.city_name}`,
       created_by: user.id,
       createdAt: new Date(),
       updatedAt: new Date()

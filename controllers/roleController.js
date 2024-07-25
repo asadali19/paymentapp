@@ -117,11 +117,12 @@ const deleteRole = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Role not found' });
     }
+    const role = await Role.findOne({ where: { role_id: id } }); 
     
     // Log activity
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has deleted the role ${deleted.role_name}`,
+      activity_name: `User ${user.username} has deleted the role ${role.role_name}`,
       created_by: user.id,
       createdAt: new Date(),
       updatedAt: new Date()

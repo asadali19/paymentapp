@@ -194,11 +194,12 @@ const deleteTerminal = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Terminal not found' });
     }
+    const terminal = await Terminal.findOne({ where: { terminal_id: id } }); 
     
     // Log activity
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has deleted the terminal ${deleted.terminal_sn}`,
+      activity_name: `User ${user.username} has deleted the terminal ${terminal.terminal_sn}`,
       created_by: user.id,
       createdAt: new Date(),
       updatedAt: new Date()

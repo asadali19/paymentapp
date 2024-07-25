@@ -142,11 +142,12 @@ const deleteMerchant = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Merchant not found' });
     }
+    const merchant = await Merchant.findOne({ where: { merchant_id: id } }); 
     
     // Log activity
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has deleted the merchant ${deleted.name}`,
+      activity_name: `User ${user.username} has deleted the merchant ${merchant.name}`,
       created_by: user.id,
       createdAt: new Date(),
       updatedAt: new Date()

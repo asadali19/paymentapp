@@ -152,18 +152,14 @@ const deleteRegion = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Fetch the region using region_id
-    const region = await Region.findOne({ where: { region_id: id } });
-
-    if (!region) {
-      return res.status(404).json({ error: 'Region not found' });
-    }
-
     // Delete the region
     await Region.destroy({
       where: { region_id: id }
     });
 
+
+// Fetch the region using region_id
+    const region = await Region.findOne({ where: { region_id: id } });    
     // Log activity
     const { user } = req;
     await ActivityLog.create({

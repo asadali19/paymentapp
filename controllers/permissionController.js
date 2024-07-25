@@ -117,11 +117,12 @@ const deletePermission = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Permission not found' });
     }
+    const permission = await Permission.findOne({ where: { permission_id: id } }); 
     
     // Log activity
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has deleted the permission ${deleted.permission_name}`,
+      activity_name: `User ${user.username} has deleted the permission ${permission.permission_name}`,
       created_by: user.id,
       createdAt: new Date(),
       updatedAt: new Date()

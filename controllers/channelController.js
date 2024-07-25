@@ -103,9 +103,10 @@ const deleteChannel = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'channel not found' });
     }
+    const channel = await Channel.findOne({ where: { channel_id: id } }); 
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has deleted the channel ${Channel.channel_name}`,
+      activity_name: `User ${user.username} has deleted the channel ${channel.channel_name}`,
       created_by: user.id,
       createdAt: new Date(),
       updatedAt: new Date()

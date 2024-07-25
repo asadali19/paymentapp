@@ -108,11 +108,12 @@ const deleteIndustry = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Industry not found' });
     }
+    const industry = await Industry.findOne({ where: { industry_id: id } }); 
     
     // Log activity
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has deleted the industry ${deleted.industry_name}`,
+      activity_name: `User ${user.username} has deleted the industry ${industry.industry_name}`,
       created_by: user.id,
       createdAt: new Date(),
       updatedAt: new Date()

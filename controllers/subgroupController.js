@@ -126,11 +126,12 @@ const deleteSubgroup = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Subgroup not found' });
     }
+    const subgroup = await Subgroup.findOne({ where: { subgroup_id: id } }); 
     
     // Log activity
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has deleted the subgroup ${deleted.subgroup_name}`,
+      activity_name: `User ${user.username} has deleted the subgroup ${subgroup.subgroup_name}`,
       created_by: user.id,
       createdAt: new Date(),
       updatedAt: new Date()
