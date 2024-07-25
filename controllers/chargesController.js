@@ -44,8 +44,8 @@ const getAllCharges = async (req, res) => {
     const charges = await Charges.findAll({
       include: [{
         model: Terminals,
-        attributes: ['terminal_sn'], // Include only the 'terminal_sn' attribute from Terminal
-        required: true // Ensure only charges with an associated terminal are returned
+        attributes: ['terminal_sn'], 
+        required: true 
       }]
     });
 
@@ -134,7 +134,7 @@ const updateCharge = async (req, res) => {
 
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} has updated the channel  ${updatedchannel.channel_name}`,
+      activity_name: `User ${user.username} has updated the channel  ${updated.name}`,
       created_by: user.id,
       createdAt:new Date(),
       updatedAt: new Date()

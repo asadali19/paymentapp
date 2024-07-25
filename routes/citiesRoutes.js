@@ -11,7 +11,7 @@ const {
 const router = express.Router();
 
 router.post('/create/city', authenticateToken, createCity);
-router.get('/city', authenticateToken, getAllCities);
+router.get('/citys', authenticateToken, getAllCities);
 router.get('/city/:id', authenticateToken, getCityById);
 router.put('/update/city/:id', authenticateToken, updateCity);
 router.delete('/delete/city/:id', authenticateToken, deleteCity);

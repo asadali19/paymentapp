@@ -10,7 +10,7 @@ const {
 } = require('../controllers/terminalController'); // Adjust the path as necessary
 
 router.post('/create/terminal', authenticateToken, createTerminal);
-router.get('/terminal', authenticateToken, getAllTerminals);
+router.get('/terminals', authenticateToken, getAllTerminals);
 router.get('/terminal/:id', authenticateToken, getTerminalById);
 router.put('/update/terminal/:id', authenticateToken, updateTerminal);
 router.delete('/delete/terminal/:id', authenticateToken, deleteTerminal);
