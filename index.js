@@ -16,6 +16,9 @@ const channelRoutes = require('./routes/channelRoutes')
 const regionRoutes = require('./routes/regionRoutes')
 const cityRoutes = require('./routes/citiesRoutes')
 const industryRoutes = require('./routes/industryRoutes')
+const atmRoutes = require('./routes/atmRoutes')
+const mopRoutes = require('./routes/mopRoutes')
+const introducerRoutes = require('./routes/introducerRoutes')
 const app =express()
 app.use(cors());
 app.use(express.json());
@@ -34,6 +37,9 @@ app.use('/api', channelRoutes);
 app.use('/api', regionRoutes);
 app.use('/api', cityRoutes);
 app.use('/api', industryRoutes);
+app.use('/api', atmRoutes);
+app.use('/api', mopRoutes);
+app.use('/api', introducerRoutes);
 
 
 

@@ -2,7 +2,6 @@ const express = require('express');
 const {authenticateToken} = require('../middleware/authMiddleware');
 const {
   createChannel,
-  getAllCountries,
   getChannelById,
   updateChannel,
   deleteChannel,
