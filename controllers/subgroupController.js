@@ -8,15 +8,13 @@ const createSubgroup = async (req, res) => {
     const {
       subgroup_name = null,
       group_id = null,
-      status = null,
-      code = null
+      status = null
     } = req.body;
 
     const newSubgroup = await Subgroup.create({
       subgroup_name,
       group_id,
       status,
-      code,
       createdAt: new Date(),
       updatedAt: new Date()
     });
@@ -79,7 +77,7 @@ const updateSubgroup = async (req, res) => {
     const updateData = {};
 
     // Dynamically add fields to updateData if they are provided in the request body
-    const fields = ['subgroup_name', 'group_id', 'status', 'code'];
+    const fields = ['subgroup_name', 'group_id', 'status'];
     fields.forEach(field => {
       if (req.body[field] !== undefined) {
         updateData[field] = req.body[field];

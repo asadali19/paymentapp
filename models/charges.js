@@ -14,8 +14,8 @@ const Charges = sequelize.define('charges', { // <-- Specify table name without 
         primaryKey: true,
         autoIncrement: true
       },
-    name: {
-    type: DataTypes.STRING
+    soc_id: {
+    type: DataTypes.INTEGER
   },
   rangeamount: {
     type: DataTypes.STRING,
@@ -27,13 +27,6 @@ const Charges = sequelize.define('charges', { // <-- Specify table name without 
   fixedamount: {
     type: DataTypes.STRING,
     
-  },
-  terminal_id: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: Terminal,
-      key: 'terminal_id'
-    }
   },
   status: {
     type: DataTypes.INTEGER,
@@ -48,8 +41,6 @@ const Charges = sequelize.define('charges', { // <-- Specify table name without 
   tableName: 'charges' 
 });
 
-// Set up the association
-Charges.belongsTo(Terminal, { foreignKey: 'terminal_id' });
 
 // Export the Terminal model
 module.exports = Charges;

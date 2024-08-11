@@ -7,20 +7,14 @@ const sequelize = new Sequelize('paymentapp', 'root', null, {
 });
  
 // Define the Role model with explicit table name
-const Channel = sequelize.define('channel', { 
-    channel_id: {
+const SocName = sequelize.define('soc_name', { 
+    id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-    channel_name: {
+    name: {
     type: DataTypes.STRING
-  },
-  code: {
-    type: DataTypes.STRING,
-  },
-  soc_id: {
-    type: DataTypes.INTEGER,
   },
   status: {
     type: DataTypes.INTEGER,
@@ -32,8 +26,8 @@ const Channel = sequelize.define('channel', {
     type: DataTypes.DATE,
   }
 }, {
-  tableName: 'channel' 
+  tableName: 'soc_name'
 });
 
 // Export the Role model
-module.exports = Channel;
+module.exports = SocName;

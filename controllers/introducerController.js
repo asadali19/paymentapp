@@ -1,4 +1,4 @@
-const Introducer = require('../models/introducer'); // Adjust the path as necessary
+const Introducer = require('../models/introducer');
 const ActivityLog = require('../models/activity');
 
 // Create a new introducer
@@ -6,8 +6,27 @@ const createIntroducer = async (req, res) => {
   try {
     const { introducer_name = null, status = null } = req.body;
 
+    let newCode;
+
+    // Get the last inserted introducer code
+    const lastIntroducer = await Introducer.findOne({
+      order: [['code', 'DESC']] // Order by code to find the latest one
+    });
+
+    if (lastIntroducer) {
+      // Extract the numeric part of the last code and increment it
+      const lastCode = parseInt(lastIntroducer.code, 10); // Assuming code is numeric
+      const incrementedCode = (lastCode + 1).toString().padStart(2, '0'); // Pad with zeros if needed
+      newCode = incrementedCode;
+    } else {
+      // Default to '01' if no introducers exist
+      newCode = '01';
+    }
+
+    // Create the new introducer with the incremented code
     const newIntroducer = await Introducer.create({
       introducer_name,
+      code: newCode,
       status,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -64,11 +83,12 @@ const getIntroducerById = async (req, res) => {
 const updateIntroducer = async (req, res) => {
   try {
     const { id } = req.params;
-    const { introducer_name = null, status = null } = req.body;
+    const { introducer_name = null, status = null, code = null } = req.body;
 
     const updatedFields = {
       introducer_name,
       status,
+      code,
       updatedAt: new Date()
     };
 

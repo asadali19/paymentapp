@@ -1,3 +1,4 @@
+const { configDotenv } = require('dotenv');
 const { Sequelize, DataTypes } = require('sequelize');
 
 // Initialize sequelize
@@ -14,6 +15,9 @@ const Introducer = sequelize.define('introducer', {
         autoIncrement: true
       },
     introducer_name: {
+    type: DataTypes.STRING
+  },
+  code: {
     type: DataTypes.STRING
   },
   status: {

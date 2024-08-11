@@ -1,14 +1,33 @@
-const Industry = require('../models/industry'); // Adjust the path as necessary
-const ActivityLog =  require('../models/activity');
+const Industry = require('../models/industry');
+const ActivityLog = require('../models/activity');
+const { Op } = require('sequelize');
 
 // Create a new industry
 const createIndustry = async (req, res) => {
   try {
-    const { industry_name = null, status = null,code = null } = req.body;
+    const { industry_name = null, status = null } = req.body;
 
+    let newCode;
+
+    // Get the last inserted industry code
+    const lastIndustry = await Industry.findOne({
+      order: [['code', 'DESC']] // Order by code to find the latest one
+    });
+
+    if (lastIndustry) {
+      // Extract the numeric part of the last code and increment it
+      const lastCode = parseInt(lastIndustry.code, 10); // Assuming code is numeric
+      const incrementedCode = (lastCode + 1).toString().padStart(2, '0'); // Pad with zeros if needed
+      newCode = incrementedCode;
+    } else {
+      // Default to '001' if no industries exist
+      newCode = '01';
+    }
+
+    // Create the new industry with the incremented code
     const newIndustry = await Industry.create({
       industry_name,
-      code,
+      code: newCode,
       status,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -18,10 +37,10 @@ const createIndustry = async (req, res) => {
     await ActivityLog.create({
       activity_name: `User ${user.username} created the new Industry ${newIndustry.industry_name}`,
       created_by: user.id,
-      createdAt:new Date(),
+      createdAt: new Date(),
       updatedAt: new Date()
     });
-  
+
     res.status(201).json({ message: 'Industry created successfully', data: newIndustry });
   } catch (error) {
     res.status(500).json({ error: error.message });

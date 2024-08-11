@@ -8,18 +8,35 @@ const createRegion = async (req, res) => {
     const {
       region_name = null,
       status = null,
-      code = null,
       fed_per = null,
     } = req.body;
 
-    if (!region_name || !status) {
+    if (!region_name || status === null) {
       return res.status(400).json({ error: 'region_name and status are required' });
     }
 
+    let newCode;
+
+    // Get the last inserted region code
+    const lastRegion = await Region.findOne({
+      order: [['code', 'DESC']] // Order by code to find the latest one
+    });
+
+    if (lastRegion) {
+      // Extract the numeric part of the last code and increment it
+      const lastCode = parseInt(lastRegion.code, 10); // Assuming code is numeric
+      const incrementedCode = (lastCode + 1).toString().padStart(3, '0'); // Pad with zeros if needed
+      newCode = incrementedCode;
+    } else {
+      // Default to '001' if no regions exist
+      newCode = '001';
+    }
+
+    // Create the new region with the incremented code
     const newRegion = await Region.create({
       region_name,
+      code: newCode,
       status,
-      code,
       fed_per,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -27,9 +44,9 @@ const createRegion = async (req, res) => {
 
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} created the new region  ${newRegion.region_name}`,
+      activity_name: `User ${user.username} created the new region ${newRegion.region_name}`,
       created_by: user.id,
-      createdAt:new Date(),
+      createdAt: new Date(),
       updatedAt: new Date()
     });
 
