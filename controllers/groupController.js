@@ -107,13 +107,14 @@ const updateGroup = async (req, res) => {
 const deleteGroup = async (req, res) => {
   try {
     const { id } = req.params;
+    const group = await Group.findOne({ where: { group_id: id } }); 
     const deleted = await Group.destroy({
       where: { group_id: id }
     });
     if (!deleted) {
       return res.status(404).json({ error: 'Group not found' });
     }
-    const group = await Group.findOne({ where: { group_id: id } }); 
+  
 
     // Log activity
     const { user } = req;

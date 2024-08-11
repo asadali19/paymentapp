@@ -36,7 +36,25 @@ const createRole = async (req, res) => {
 const getAllRoles = async (req, res) => {
   try {
     const roles = await Role.findAll();
-    res.status(200).json({ message: 'Roles retrieved successfully', data: roles });
+
+    const rolesWithParsedPermissions = roles.map(role => {
+      let parsedPermissions = [];
+      
+      try {
+        parsedPermissions = JSON.parse(role.permissions);
+      } catch (error) {
+        console.error('Error parsing permissions:', error);
+        // Handle the case where permissions cannot be parsed; e.g., set to an empty array or default value
+        parsedPermissions = [];
+      }
+
+      return {
+        ...role.toJSON(), // Convert Sequelize model instance to plain object
+        permissions: parsedPermissions // Use the parsed permissions array
+      };
+    });
+
+    res.status(200).json({ message: 'Roles retrieved successfully', data: rolesWithParsedPermissions });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
