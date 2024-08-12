@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const Terminal = require('./terminal'); // Adjust the path as necessary
+const SocName = require('./soc_name');
 
 // Initialize sequelize
 const sequelize = new Sequelize('paymentapp', 'root', null, {
@@ -14,9 +15,13 @@ const Charges = sequelize.define('charges', { // <-- Specify table name without 
         primaryKey: true,
         autoIncrement: true
       },
-    soc_id: {
-    type: DataTypes.INTEGER
-  },
+      soc_id: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: SocName,
+          key: 'soc_id'
+        }
+      },
   rangeamount: {
     type: DataTypes.STRING,
   },
@@ -41,6 +46,7 @@ const Charges = sequelize.define('charges', { // <-- Specify table name without 
   tableName: 'charges' 
 });
 
+Charges.belongsTo(SocName, { foreignKey: 'soc_id' });
 
 // Export the Terminal model
 module.exports = Charges;

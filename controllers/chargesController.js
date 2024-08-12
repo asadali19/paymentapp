@@ -70,8 +70,8 @@ const getAllCharges = async (req, res) => {
   try {
     const charges = await Charges.findAll({
       include: [{
-        model: Terminals,
-        attributes: ['terminal_sn'], 
+        model: SocName,
+        attributes: ['name'], 
         required: true 
       }]
     });
@@ -98,11 +98,12 @@ const getChargeById = async (req, res) => {
     // Find the charge by ID, including the associated Merchant's soc_id
     const charge = await Charges.findByPk(id, {
       include: [{
-        model: Terminals,
-        attributes: ['terminal_sn'], // Include only the 'soc_id' attribute from Merchant
-        required: true // Ensure only charges with an associated merchant are returned
+        model: SocName,
+        attributes: ['name'], 
+        required: true 
       }]
     });
+
    
     if (!charge) {
       return res.status(404).json({ error: 'Charge not found' });
