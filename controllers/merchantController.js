@@ -1,28 +1,83 @@
 // merchantController.js
 const Merchant = require('../models/merchant');
 const SubGroup = require('../models/subgroup'); 
+const ActivityLog = require('../models/activity')
 
 // Create a new merchant
 const createMerchant = async (req, res) => {
   try {
-    const { name, phone, email, business_name, address, subgroup_id,status } = req.body;
-    console.log(req.body);
-    const newMerchant = await Merchant.create({
-      name,
-      phone,
-      email,
+    const {
       business_name,
-      address,
-      status,
-      subgroup_id
+      brand_name,
+      owner_name,
+      contact_info,
+      business_status,
+      business_type,
+      business_email,
+      business_address,
+      city_id,
+      business_age,
+      ntn,
+      poc_name,
+      poc_designation,
+      poc_contact,
+      industry_id,
+      channel_id,
+      introducer_id,
+      outlets,
+      pos,
+      transaction_perday,
+      transaction_volume,
+      checkouts,
+      outlet_owner,
+      ctm,
+      account_no,
+      bank_name,
+      account_title,
+      deployment,
+      subgroup_id,
+    } = req.body;
+
+    console.log(req.body);
+
+    const newMerchant = await Merchant.create({
+      business_name,
+      brand_name,
+      owner_name,
+      contact_info,
+      business_status,
+      business_type,
+      business_email,
+      business_address,
+      city_id,
+      business_age,
+      ntn,
+      poc_name,
+      poc_designation,
+      poc_contact,
+      industry_id,
+      channel_id,
+      introducer_id,
+      outlets,
+      pos,
+      transaction_perday,
+      transaction_volume,
+      checkouts,
+      outlet_owner,
+      ctm,
+      account_no,
+      bank_name,
+      account_title,
+      deployment,
+      subgroup_id,
     });
-     
+
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} created the new merchant ${newMerchant.name}`,
+      activity_name: `User ${user.username} created the new merchant ${newMerchant.business_name}`,
       created_by: user.id,
-      createdAt:new Date(),
-      updatedAt: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     res.status(201).json(newMerchant);
