@@ -1,6 +1,10 @@
 // merchantController.js
 const Merchant = require('../models/merchant');
 const SubGroup = require('../models/subgroup'); 
+const City = require('../models/cities'); 
+const Introducer = require('../models/introducer'); 
+const Industry = require('../models/industry');
+const Channel = require('../models/channel');  
 const ActivityLog = require('../models/activity')
 
 // Create a new merchant
@@ -90,22 +94,51 @@ const createMerchant = async (req, res) => {
 const getAllMerchants = async (req, res) => {
   try {
     const merchants = await Merchant.findAll({
-      include: [{
-        model: SubGroup,
-        attributes: ['subgroup_name'], 
-        required: false 
-      }]
+      include: [
+        {
+          model: SubGroup,
+          attributes: ['subgroup_name'],
+          required: false
+        },
+        {
+          model: City,
+          attributes: ['city_name'],
+          required: false
+        },
+        {
+          model: Introducer,
+          attributes: ['introducer_name'],
+          required: false
+        },
+        {
+          model: Channel,
+          attributes: ['channel_name'],
+          required: false
+        },
+        {
+          model: Industry,
+          attributes: ['industry_name'],
+          required: false
+        }
+      ]
     });
 
-    // Map merchants to include subgroup name directly in the response
-    const merchantsWithSubgroupName = merchants.map(merchant => {
-      const { Subgroup, ...merchantData } = merchant.dataValues;
-      return {
+    // Map merchants to include all associated names directly in the response
+    const merchantsWithDetails = merchants.map(merchant => {
+      const {
+        SubGroup,
+        City,
+        Introducer,
+        Channel,
+        Industry,
         ...merchantData
+      } = merchant.dataValues;
+      return {
+        ...merchantData,
       };
     });
 
-    res.status(200).json({ message: 'Merchants retrieved successfully', data: merchantsWithSubgroupName });
+    res.status(200).json({ message: 'Merchants retrieved successfully', data: merchantsWithDetails });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -116,32 +149,63 @@ const getMerchantById = async (req, res) => {
   try {
     const { id } = req.params;
     const merchant = await Merchant.findByPk(id, {
-      include: [{
-        model: SubGroup,
-        attributes: ['subgroup_name'], 
-        required: false // Include merchants even if they do not have a subgroup
-      }]
+      include: [
+        {
+          model: SubGroup,
+          attributes: ['subgroup_name'],
+          required: false
+        },
+        {
+          model: City,
+          attributes: ['city_name'],
+          required: false
+        },
+        {
+          model: Introducer,
+          attributes: ['introducer_name'],
+          required: false
+        },
+        {
+          model: Channel,
+          attributes: ['channel_name'],
+          required: false
+        },
+        {
+          model: Industry,
+          attributes: ['industry_name'],
+          required: false
+        }
+      ]
     });
 
     if (!merchant) {
       return res.status(404).json({ message: 'Merchant not found' });
     }
 
-    const { Subgroup, ...merchantData } = merchant.dataValues;
-    const merchantWithSubgroupName = {
+    // Extract associated data and merchant data
+    const {
+      SubGroup: subgroup,
+      City: city,
+      Introducer: introducer,
+      Channel: channel,
+      Industry: industry,
+      ...merchantData
+    } = merchant.dataValues;
+
+    const merchantWithDetails = {
       ...merchantData
     };
-    
+
+    // Log activity
     const { user } = req;
     await ActivityLog.create({
-      activity_name: `User ${user.username} viewed the merchant  ${merchant.name}`,
+      activity_name: `User ${user.username} viewed the merchant ${merchant.name}`,
       created_by: user.id,
-      createdAt:new Date(),
+      createdAt: new Date(),
       updatedAt: new Date()
     });
 
-
-    res.status(200).json({ message: 'Merchant retrieved successfully', data: merchantWithSubgroupName });
+    res.status(200).json({ message: 'Merchant retrieved successfully', data: merchantWithDetails });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
